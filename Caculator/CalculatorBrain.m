@@ -60,6 +60,15 @@
     }else{
         result = [self popOperand];
     }
+    if([operationString isEqualToString:@"="] ){
+        self.operandStack = nil;
+        self.operationSymbol = nil;
+        return result;
+    }else if([operationString isEqualToString:@"C"]){
+        self.operandStack = nil;
+        self.operationSymbol = nil;
+        return 0;
+    }
     [self pushOperand:result];
     [self pushOperation:operationString];
     return result;
