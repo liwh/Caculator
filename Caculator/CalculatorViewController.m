@@ -18,19 +18,31 @@
 @synthesize isTheMiddleOfANumber = _isTheMiddleOfANumber;
 @synthesize brain = _brain;
 
+-(void)handleDot{
+    NSRange range = [self.display.text rangeOfString:@"."];
+    if (range.location == NSNotFound && self.isTheMiddleOfANumber) {
+        self.display.text = [self.display.text stringByAppendingString:@"."];
+    }else if(!self.isTheMiddleOfANumber){
+        self.display.text = @"0.";
+        self.isTheMiddleOfANumber = YES;
+    }
+}
+
 - (IBAction)digitNumber:(UIButton *)sender {
     NSString* digit = [sender currentTitle];
-    if (self.isTheMiddleOfANumber){
+    if ([digit isEqualToString:@"."]) {
+        [self handleDot];
+    }else if (self.isTheMiddleOfANumber){
     self.display.text = [[self.display text]stringByAppendingString:digit];
-    } else if([self.display.text isEqualToString:@"0"] && [digit isEqualToString:@"0"]){
+    }else if([self.display.text isEqualToString:@"0"] && [digit isEqualToString:@"0"]){
          self.isTheMiddleOfANumber = NO;
     }else{
         self.display.text = digit;
         self.isTheMiddleOfANumber = YES;
     }
 }
+
 - (void)enterPressed{
-    [self.brain pushOperand:[self.display.text doubleValue]];
     self.isTheMiddleOfANumber = NO;
 }
 -(CalculatorBrain *) brain {
@@ -38,7 +50,10 @@
     return _brain;
 }
 - (IBAction)operate:(UIButton *)sender {
-    if (self.isTheMiddleOfANumber) [self enterPressed];
+    if (self.isTheMiddleOfANumber) {
+        self.brain.result = [self.display.text doubleValue];
+        [self enterPressed];
+    }
     double result = [self.brain performOperation:sender.currentTitle];
     NSString *resultString = [NSString stringWithFormat:@"%g",result];
     self.display.text = resultString;
